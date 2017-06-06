@@ -1,5 +1,6 @@
 #include <cmath>
 #include "PID.h"
+#include <uWS/uWS.h>
 
 using namespace std;
 
@@ -31,4 +32,3 @@ void PID::UpdateError(double cte) {
 double PID::TotalError() {
     return total_error / n;
 }
-

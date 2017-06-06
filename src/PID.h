@@ -1,5 +1,6 @@
 #ifndef PID_H
 #define PID_H
+#include <uWS/uWS.h>
 
 class PID {
 public:
@@ -38,6 +39,8 @@ public:
   * Update the PID error variables given cross track error.
   */
   void UpdateError(double cte);
+
+    void Restart(uWS::WebSocket<uWS::SERVER> ws);
 
   /*
   * Calculate the total PID error.

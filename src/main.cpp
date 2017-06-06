@@ -33,7 +33,7 @@ int main()
   uWS::Hub h;
 
   PID pid;
-  pid.Init(0.01, 0.005, 1.0);
+  pid.Init(0.55, 0.00000755, 11.55);
   // TODO: Initialize the pid variable.
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
@@ -76,6 +76,7 @@ int main()
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+
         }
       } else {
         // Manual driving

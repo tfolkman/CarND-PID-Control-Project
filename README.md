@@ -3,82 +3,24 @@ Self-Driving Car Engineer Nanodegree Program
 
 ---
 
-## Dependencies
+## Reflection
 
-* cmake >= 3.5
- * All OSes: [click here for installation instructions](https://cmake.org/install/)
-* make >= 4.1
-  * Linux: make is installed by default on most Linux distros
-  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
-  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
-* gcc/g++ >= 5.4
-  * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools]((https://developer.apple.com/xcode/features/)
-  * Windows: recommend using [MinGW](http://www.mingw.org/)
-* [uWebSockets](https://github.com/uWebSockets/uWebSockets) == 0.13, but the master branch will probably work just fine
-  * Follow the instructions in the [uWebSockets README](https://github.com/uWebSockets/uWebSockets/blob/master/README.md) to get setup for your platform. You can download the zip of the appropriate version from the [releases page](https://github.com/uWebSockets/uWebSockets/releases). Here's a link to the [v0.13 zip](https://github.com/uWebSockets/uWebSockets/archive/v0.13.0.zip).
-  * If you run OSX and have homebrew installed you can just run the ./install-mac.sh script to install this
-* Simulator. You can download these from the [project intro page](https://github.com/udacity/CarND-PID-Control-Project/releases) in the classroom.
+### Effect of P
 
-## Basic Build Instructions
+P stands for proportional and steers the car in proportion to the cross-track error. By itself, a proportional controller will always overshoot its goal and never really converges. For the proportional constant I arrived at 0.55. Honestly, I didn't have a strong expectation for this value and it required a lot of manual tuning to better understand an appropriate value (see 'Choosing Hyperparameters').
 
-1. Clone this repo.
-2. Make a build directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./pid`. 
+### Effect of I
 
-## Editor Settings
+The I effect - or integral - allows the steering to adjust for the bias of the car. To measure this integral effect, we take the sum of the cross track error over time and adjust the steering proportionally. For the proportional constant I arrived at 0.00000755. This is close to what I would have expected because my prior was a small amount of bias in our simulated car.
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
+### Effect of D
 
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
+To help avoid the over shotting and oscillation of the P controller, the D - or derivative - effect is added. This steers the car in proportion to the temporal derivative of the cross-track error, allowing a counter steer as we approach our goal. For the proportional constant I arrived at 11.55. Again, for D, I also didn't have a strong expectation, though I somewhat expected it to be larger than P to allow for a smoother convergence to the goal. 
 
-## Code Style
+### Choosing hyperparameters
 
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
+I arrived at my hyperparameters via a manual grid search. I started my search around (1, .0001, 5). The P and D values were fairly arbitrary, but I chose a low I value because I believed there would be small car bias. I then would altered each by a magnitude of +-1 to see if it improved the steering. Once, I got within a value of 1, I moved by 0.11 intervals. 
 
-## Project Instructions and Rubric
+I quickly discovered, though, that I needed a much smaller I value due to too much over correction over time. So I quickly jumped down magnitudes to .000005 and made smaller tunes from there. 
 
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
-
-More information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/f1820894-8322-4bb3-81aa-b26b3c6dcbaf/lessons/e8235395-22dd-4b87-88e0-d108c5e5bbf4/concepts/6a4d8d42-6a04-4aa6-b284-1697c0fd6562)
-for instructions and the project rubric.
-
-## Hints!
-
-* You don't have to follow this directory structure, but if you do, your work
-  will span all of the .cpp files here. Keep an eye out for TODOs.
-
-## Call for IDE Profiles Pull Requests
-
-Help your fellow students!
-
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to we ensure
-that students don't feel pressured to use one IDE or another.
-
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
-
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
-
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
-
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
-
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
+This process took longer that I would have first imagined, so at some point I may go back and try to implement twiddle. It would be interesting to see how quickly it finds appropriate values.
